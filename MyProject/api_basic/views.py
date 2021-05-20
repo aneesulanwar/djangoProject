@@ -1,13 +1,25 @@
 from django.shortcuts import render
-from django.shortcuts import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from rest_framework.parsers import JSONParser
+from .models import Article,sportArticle
+from .serializer import ArticleSerializer, SportArticleSerializer
+from django.views.decorators.csrf import csrf_exempt
 
-def home(request):
-    return render(request,'home.html')
+@csrf_exempt
+def articles(request):
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles,many=True)
+        return JsonResponse(serializer.data,safe=False)
 
-def contact(request):
-    return render(request,'contact.html')
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
-def about(request):
-    return render(request,'about.html')
 
 # Create your views here.

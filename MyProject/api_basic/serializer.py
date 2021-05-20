@@ -1,15 +1,14 @@
 from rest_framework import serializers
 from .models import Article,sportArticle
 
-class ArticleSerializer(serializers.Serializer):
+class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
         fields = ['title','author','email','date']
 
 
-
-class SportArticleSerializer(serializers.Serializer):
+class SportArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = sportArticle
