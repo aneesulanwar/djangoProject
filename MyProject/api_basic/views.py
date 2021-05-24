@@ -67,7 +67,7 @@ def articlesDetails(request,title):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@csrf_exempt
+@api_view(['GET','PUT','DELETE'])
 def sportsDetails(request,title):
     try:
         article = sportArticle.objects.get(title=title)
