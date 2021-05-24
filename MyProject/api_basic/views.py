@@ -72,25 +72,25 @@ def sportsDetails(request,title):
     try:
         article = sportArticle.objects.get(title=title)
     except sportArticle.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
 
     if request.method == 'GET':
         serializer = SportArticleSerializer(article)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
     elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = SportArticleSerializer(article,data=data)
+    
+        serializer = SportArticleSerializer(article,data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data,status=201)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
         else:
-            return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "Delete":
         article.delete()
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
