@@ -12,6 +12,10 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 class ArticleApiView(APIView):
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self,request):
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles,many=True)
