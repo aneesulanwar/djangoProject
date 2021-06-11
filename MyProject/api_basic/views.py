@@ -3,17 +3,43 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,generics
 from .models import Article,sportArticle
-from .serializer import ArticleSerializer, SportArticleSerializer
+from .serializer import ArticleSerializer, SportArticleSerializer,UserSerializer, RegisterSerializer,appUserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+
+class RegisterAPI(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer1 = appUserSerializer(data=request.data)
+        if serializer1.is_valid():
+            serializer1.save()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+        "user": UserSerializer(user, context=self.get_serializer_context()).data
+        #"token": Token.objects.create(user)[1]
+        })
+
+
+class UserApiView(APIView):
+    def post(self,request):
+         serializer = appUserSerializer(data=request.data)
+         if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+         else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ArticleApiView(APIView):
 
-    authentication_classes = [TokenAuthentication]
+    #authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self,request):
@@ -54,6 +80,8 @@ class ArticleDetails(APIView):
         article = self.get_object(title)
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 
