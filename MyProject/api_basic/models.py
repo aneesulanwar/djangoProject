@@ -7,8 +7,8 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
-class appUser(models.Model):
-    username = models.CharField(max_length=100)
+class applicationUser(models.Model):
+    username = models.CharField(max_length=100,primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)

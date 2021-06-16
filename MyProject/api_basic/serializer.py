@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article,sportArticle,appUser
+from .models import Article,sportArticle,applicationUser
 from django.contrib.auth.models import User
 
 
@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class appUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = appUser
+        model = applicationUser
         fields = ['username', 'first_name','last_name','email', 'date']
 
 

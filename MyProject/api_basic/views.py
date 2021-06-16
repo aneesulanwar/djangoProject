@@ -4,21 +4,27 @@ from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status,generics
-from .models import Article,sportArticle
+from .models import Article,sportArticle,applicationUser
 from .serializer import ArticleSerializer, SportArticleSerializer,UserSerializer, RegisterSerializer,appUserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer1 = appUserSerializer(data=request.data)
-        if serializer1.is_valid():
+    
+        #if not user1 is None:
+        if serializer1.is_valid(raise_exception=True):
+            #data = serializer1.validated_data['username']
+            #user1 = appUser.objects.get(username=data)
             serializer1.save()
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -26,6 +32,20 @@ class RegisterAPI(generics.GenericAPIView):
         "user": UserSerializer(user, context=self.get_serializer_context()).data
         #"token": Token.objects.create(user)[1]
         })
+
+
+class UserDetailAPI(APIView):
+    def get_object(self,username):
+        try:
+            return applicationUser.objects.get(username=username)
+        except applicationUser.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self,request,username):
+        user = self.get_object(username)
+        serializer = appUserSerializer(user)
+        return Response(serializer.data)
+        
 
 
 class UserApiView(APIView):
@@ -82,8 +102,66 @@ class ArticleDetails(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+##
+
+class sportArticleApiView(APIView):
+
+    #authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        articles = sportArticle.objects.all()
+        serializer = SportArticleSerializer(articles,many=True)
+        return Response(serializer.data)
+
+    def post(self,request):
+         serializer = SportArticleSerializer(data=request.data)
+         if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+         else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class sportArticleDetails(APIView):
+    def get_object(self,title):
+        try:
+            return sportArticle.objects.get(title=title)
+        except Article.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self,request,title):
+        article = self.get_object(title)
+        serializer = SportArticleSerializer(article)
+        return Response(serializer.data)
+
+    def put(self,request,title):
+        article = self.get_object(title)
+        serializer = SportArticleSerializer(article,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self,request,title):
+        article = self.get_object(title)
+        article.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+##
+
+
+@api_view(['GET','POST'])
+def login(request):
+    
+    if request.method == 'POST':
+        
+        body_unicode = request.body.decode('utf-8')
+        #body = JSONParser().parse(body_unicode)
+        #content = body['username']
+        return Response(body_unicode, status=status.HTTP_201_CREATED)
+        
 
 
 
@@ -108,7 +186,7 @@ def sportArticles(request):
     if request.method == 'GET':
         articles = sportArticle.objects.all()
         serializer = SportArticleSerializer(articles,many=True)
-        return Response(serializer.data,safe=False)
+        return Response(serializer.data)
 
     if request.method == 'POST':
     
