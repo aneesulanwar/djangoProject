@@ -8,7 +8,7 @@ urlpatterns = [
     path('articles-details/<str:title>/',ArticleDetails.as_view()),
     path('register/', RegisterAPI.as_view(), name='register'),
     path('sports-details/<str:title>/',sportsDetails),
-    path('users-details/<str:username>/', UserDetailAPI.as_view()),
+    path('users-details/', UserDetailAPI.as_view()),
     path('login/',obtain_auth_token),
 
 ]

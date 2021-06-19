@@ -35,14 +35,15 @@ class RegisterAPI(generics.GenericAPIView):
 
 
 class UserDetailAPI(APIView):
+    serializerc= appUserSerializer
     def get_object(self,username):
         try:
             return applicationUser.objects.get(username=username)
         except applicationUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def get(self,request,username):
-        user = self.get_object(username)
+    def get(self,*args,**kwargs):
+        user = applicationUser.objects.get(username=self.request.GET.get('username'))
         serializer = appUserSerializer(user)
         return Response(serializer.data)
         
