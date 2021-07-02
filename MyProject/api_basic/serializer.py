@@ -31,14 +31,14 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ['title','author','email','date']
+        fields = ['id','title','author','email','date']
 
 
 class SportArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = sportArticle
-        fields = ['title','author','email','data','date']
+        fields = ['id','title','author','email','data','date']
 
 
 
