@@ -11,6 +11,7 @@ class applicationUser(models.Model):
     username = models.CharField(max_length=100,primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    profile_picture = models.ImageField(null=True, default=None, blank=True)
     email = models.EmailField(max_length=100)
     date = models.DateTimeField(auto_now_add=True)
 

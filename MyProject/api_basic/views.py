@@ -46,6 +46,18 @@ class UserDetailAPI(APIView):
         user = applicationUser.objects.get(username=self.request.GET.get('username'))
         serializer = appUserSerializer(user)
         return Response(serializer.data)
+
+    def put(self,request,username):
+        user = self.get_object(username=username)
+        user.profile_picture = request.data.get('profile_picture')
+        serializer = appUserSerializer(user,data={'username':user.username,'first_name':user.first_name,'last_name':user.last_name,'profile_picture':user.profile_picture,'email':user.email,'date':user.date})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
         
 
 

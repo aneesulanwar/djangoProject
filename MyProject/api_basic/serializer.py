@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article,sportArticle,applicationUser
+from .models import Article,sportArticle,applicationUser,finalArticle,articleLikes,articleComments
 from django.contrib.auth.models import User
 
 
@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class appUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = applicationUser
-        fields = ['username', 'first_name','last_name','email', 'date']
+        fields = ['username', 'first_name','last_name','profile_picture','email','date']
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -41,8 +41,24 @@ class SportArticleSerializer(serializers.ModelSerializer):
         fields = ['id','title','author','email','data','date']
 
 
+class FinalArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = finalArticle
+        fields = ['id','title','author','email','category','data','date']
+
+class LikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = articleLikes
+        fields = ['username','articleId']
 
 
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = articleLikes
+        fields = ['username','articleId','comment']
 
 '''
 class ArticleSerializer(serializers.Serializer):
